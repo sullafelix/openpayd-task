@@ -25,3 +25,5 @@ mvnw
 *.md
 *.cmd
 *.iml
+.idea
+.mvn

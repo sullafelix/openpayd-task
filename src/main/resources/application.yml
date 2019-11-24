@@ -1,0 +1,3 @@
+task:
+  currencyservice:
+    url: https://api.ratesapi.io/api/latest
