@@ -1,5 +1,6 @@
 package com.example.demo.service;
 
+import com.example.demo.exceptions.FaultyCurrencyCodeException;
 import com.example.demo.model.ExchangeRate;
 import com.example.demo.model.Transaction;
 import org.slf4j.Logger;
@@ -12,6 +13,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDateTime;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 
@@ -32,8 +35,8 @@ public class ExchangeRateLookupService {
     }
 
     public ExchangeRate getExchangeRate(String baseCode, String targetCode) {
-        Currency baseCurrency = Currency.getInstance(baseCode);
-        Currency targetCurrency = Currency.getInstance(targetCode);
+        Currency baseCurrency = getCurrencyFromCode(baseCode);
+        Currency targetCurrency = getCurrencyFromCode(targetCode);
         return getExchangeRate(baseCurrency, targetCurrency);
     }
 
@@ -56,18 +59,27 @@ public class ExchangeRateLookupService {
     }
 
     public Transaction getTransaction(String baseCode, String targetCode, double baseAmount) {
-        Currency baseCurrency = Currency.getInstance(baseCode);
-        Currency targetCurrency = Currency.getInstance(targetCode);
+        Currency baseCurrency = getCurrencyFromCode(baseCode);
+        Currency targetCurrency = getCurrencyFromCode(targetCode);
         ExchangeRate exchangeRate = getExchangeRate(baseCurrency, targetCurrency);
 
         Transaction transaction = new Transaction();
         transaction.setBase(baseCurrency);
         transaction.setTarget(targetCurrency);
         transaction.setAmount(baseAmount * exchangeRate.getRates().get(targetCurrency));
-        transaction.setDate(new Date());
+        transaction.setDate(LocalDateTime.now());
         transaction = transactionService.saveTransaction(transaction);
 
         return transaction;
     }
 
+    private Currency getCurrencyFromCode(String currencyCode) {
+        Currency currency;
+        try {
+            currency = Currency.getInstance(currencyCode);
+        } catch (IllegalArgumentException e) {
+            throw new FaultyCurrencyCodeException();
+        }
+        return currency;
+    }
 }

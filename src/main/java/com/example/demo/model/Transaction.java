@@ -7,6 +7,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Currency;
 import java.util.Date;
 import java.util.UUID;
@@ -21,5 +23,5 @@ public class Transaction {
     private Currency base;
     private Currency target;
     private double amount;
-    private Date date;
+    private LocalDateTime date;
 }
