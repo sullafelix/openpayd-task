@@ -7,6 +7,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Currency;
@@ -22,6 +23,6 @@ public class Transaction {
     private UUID id;
     private Currency base;
     private Currency target;
-    private double amount;
+    private BigDecimal amount;
     private LocalDateTime date;
 }

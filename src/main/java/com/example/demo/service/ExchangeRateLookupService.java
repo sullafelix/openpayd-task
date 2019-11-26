@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Calendar;
 import java.util.Currency;
@@ -58,7 +59,7 @@ public class ExchangeRateLookupService {
         return response.getBody();
     }
 
-    public Transaction getTransaction(String baseCode, String targetCode, double baseAmount) {
+    public Transaction saveTransaction(String baseCode, String targetCode, BigDecimal baseAmount) {
         Currency baseCurrency = getCurrencyFromCode(baseCode);
         Currency targetCurrency = getCurrencyFromCode(targetCode);
         ExchangeRate exchangeRate = getExchangeRate(baseCurrency, targetCurrency);
@@ -66,7 +67,7 @@ public class ExchangeRateLookupService {
         Transaction transaction = new Transaction();
         transaction.setBase(baseCurrency);
         transaction.setTarget(targetCurrency);
-        transaction.setAmount(baseAmount * exchangeRate.getRates().get(targetCurrency));
+        transaction.setAmount(baseAmount.multiply(exchangeRate.getRates().get(targetCurrency)));
         transaction.setDate(LocalDateTime.now());
         transaction = transactionService.saveTransaction(transaction);
 

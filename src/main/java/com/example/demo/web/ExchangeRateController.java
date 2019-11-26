@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 @RequestMapping("api/v1")
@@ -43,8 +42,8 @@ public class ExchangeRateController {
     @GetMapping("convert")
     public Transaction convert(@RequestParam(value = "base", required = true) String baseCode,
                                @RequestParam(value = "target", required = true) String targetCode,
-                               @RequestParam(value = "amount", required = true) Double amount) {
-        Transaction transaction = exchangeRateLookupService.getTransaction(baseCode, targetCode, amount);
+                               @RequestParam(value = "amount", required = true) BigDecimal amount) {
+        Transaction transaction = exchangeRateLookupService.saveTransaction(baseCode, targetCode, amount);
         Transaction response = new Transaction();
         response.setId(transaction.getId());
         response.setAmount(transaction.getAmount());
