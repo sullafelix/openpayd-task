@@ -15,9 +15,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Calendar;
 import java.util.Currency;
-import java.util.Date;
 
 @Service
 public class ExchangeRateLookupService {
