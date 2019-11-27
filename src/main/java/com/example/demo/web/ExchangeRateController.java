@@ -35,7 +35,7 @@ public class ExchangeRateController {
 
     @GetMapping("rate")
     public ExchangeRate rate(@RequestParam(value = "base", required = true) String baseCode,
-                                        @RequestParam(value = "target", required = true) String targetCode) {
+                             @RequestParam(value = "target", required = true) String targetCode) {
         return exchangeRateLookupService.getExchangeRate(baseCode, targetCode);
     }
 
@@ -43,7 +43,7 @@ public class ExchangeRateController {
     public Transaction convert(@RequestParam(value = "base", required = true) String baseCode,
                                @RequestParam(value = "target", required = true) String targetCode,
                                @RequestParam(value = "amount", required = true) BigDecimal amount) {
-        Transaction transaction = exchangeRateLookupService.saveTransaction(baseCode, targetCode, amount);
+        Transaction transaction = exchangeRateLookupService.convert(baseCode, targetCode, amount);
         Transaction response = new Transaction();
         response.setId(transaction.getId());
         response.setAmount(transaction.getAmount());

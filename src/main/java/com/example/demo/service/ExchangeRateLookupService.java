@@ -7,7 +7,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
@@ -28,8 +27,8 @@ public class ExchangeRateLookupService {
     private final TransactionService transactionService;
 
     @Autowired
-    public ExchangeRateLookupService(RestTemplateBuilder restTemplateBuilder, TransactionService transactionService) {
-        this.restTemplate = restTemplateBuilder.build();
+    public ExchangeRateLookupService(RestTemplate restTemplate, TransactionService transactionService) {
+        this.restTemplate = restTemplate;
         this.transactionService = transactionService;
     }
 
@@ -41,7 +40,7 @@ public class ExchangeRateLookupService {
 
 
 
-    public ExchangeRate getExchangeRate(Currency base, Currency target) {
+    private ExchangeRate getExchangeRate(Currency base, Currency target) {
         logger.info("Looking up base:" + base + " target:" + target);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Accept", MediaType.APPLICATION_JSON_VALUE);
@@ -57,13 +56,12 @@ public class ExchangeRateLookupService {
         return response.getBody();
     }
 
-    public Transaction saveTransaction(String baseCode, String targetCode, BigDecimal baseAmount) {
-        Currency baseCurrency = getCurrencyFromCode(baseCode);
+    public Transaction convert(String baseCode, String targetCode, BigDecimal baseAmount) {
+        ExchangeRate exchangeRate = getExchangeRate(baseCode, targetCode);
         Currency targetCurrency = getCurrencyFromCode(targetCode);
-        ExchangeRate exchangeRate = getExchangeRate(baseCurrency, targetCurrency);
 
         Transaction transaction = new Transaction();
-        transaction.setBase(baseCurrency);
+        transaction.setBase(exchangeRate.getBase());
         transaction.setTarget(targetCurrency);
         transaction.setAmount(baseAmount.multiply(exchangeRate.getRates().get(targetCurrency)));
         transaction.setDate(LocalDateTime.now());

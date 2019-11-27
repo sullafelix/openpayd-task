@@ -1,4 +1,4 @@
-package com.example.demo;
+package com.example.demo.web;
 
 import com.example.demo.model.ExchangeRate;
 import com.example.demo.model.Transaction;
@@ -72,7 +72,7 @@ public class ExchangeRateControllerTest {
 
     @Test
     public void convertTest() throws Exception {
-        when(lookupService.saveTransaction("USD", "TRY", BigDecimal.valueOf(20)))
+        when(lookupService.convert("USD", "TRY", BigDecimal.valueOf(20)))
                 .thenReturn(createUSDTRYTransaction());
         //Test
         ResultActions result = mockMvc.perform(get("/api/v1/convert")
