@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.mockito.stubbing.Answer;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -45,9 +46,12 @@ public class ExchangeRateLookupServiceTest {
         ReflectionTestUtils.setField(exchangeRateLookupService, "url", "http://foo");
 
         when(transactionService.saveTransaction(any(Transaction.class)))
-                .thenAnswer(t -> {
-                    ((Transaction)t.getArgument(0)).setId(UUID.randomUUID());
-                    return t;
+                .thenAnswer((Answer<Transaction>) invocationOnMock -> {
+                    Object[] args = invocationOnMock.getArguments();
+                    Transaction transaction = (Transaction)args[0];
+                    transaction.setId(UUID.randomUUID());
+
+                    return transaction;
                 });
     }
 
@@ -65,7 +69,7 @@ public class ExchangeRateLookupServiceTest {
         Transaction transaction = exchangeRateLookupService.convert("USD", "TRY", BigDecimal.valueOf(20));
         Assertions.assertNotNull(transaction);
         Assertions.assertNotNull(transaction.getId());
-        Assertions.assertEquals(transaction.getAmount(), BigDecimal.valueOf(114));
+        Assertions.assertEquals(0, transaction.getAmount().compareTo(BigDecimal.valueOf(114)));
         Assertions.assertEquals(transaction.getBase(), Currency.getInstance("USD"));
         Assertions.assertEquals(transaction.getTarget(), Currency.getInstance("TRY"));
         Assertions.assertEquals(transaction.getDate().toLocalDate(), LocalDate.now());
